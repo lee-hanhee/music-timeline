@@ -16,11 +16,11 @@ const songUpdateSchema = z.object({
 });
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
   try {
-    const songId = params.id;
+    const songId = context.params.id;
     const body = await request.json();
 
     // Validate the request body
@@ -62,11 +62,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: { id: string } }
 ) {
   try {
-    const songId = params.id;
+    const songId = context.params.id;
 
     try {
       const success = await deleteSong(songId);
