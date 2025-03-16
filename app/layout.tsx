@@ -1,26 +1,23 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from "geist/font/sans"; // Import from geist package
 import "./globals.css";
-import { Toaster } from "@/app/components/ui/toaster";
 
-const inter = Inter({ subsets: ["latin"] });
+// Use GeistSans from the geist package
+const font = GeistSans;
 
 export const metadata: Metadata = {
   title: "Music Timeline",
-  description: "Share and discover music with friends",
+  description: "A Spotify-powered music timeline app",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en">
-      <body className={inter.className}>
-        {children}
-        <Toaster />
-      </body>
+      <body className={font.className}>{children}</body>
     </html>
   );
 }
