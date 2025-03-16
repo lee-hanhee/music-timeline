@@ -1,12 +1,11 @@
 # Music Timeline
 
-A full-stack web application that allows users to create a shared music timeline. Users can search for songs using the Spotify API, add them to a timeline, play music using the Spotify Web Playback SDK, and add songs to their Spotify playlists.
+A full-stack web application that allows users to create a shared music timeline. Users can search for songs using the Spotify API, add them to a timeline, and add songs to their Spotify playlists.
 
 ## Features
 
 - Search for songs using the Spotify API
 - Add songs to a shared timeline
-- Play music using the Spotify Web Playback SDK
 - Add songs to Spotify playlists
 - User-specific timelines (Kate, Victor, Hanhee)
 - Spotify authentication for playlist management and playback
@@ -18,11 +17,11 @@ A full-stack web application that allows users to create a shared music timeline
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL (Supabase)
 - **Authentication**: Spotify OAuth
-- **APIs**: Spotify Web API, Spotify Web Playback SDK
+- **APIs**: Spotify Web API
 
 ## Prerequisites
 
-- Node.js 18+ and npm
+- Node.js and npm
 - Supabase account
 - Spotify Developer account with API credentials
 
@@ -99,14 +98,6 @@ npm run dev
 ```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Spotify Web Playback SDK
-
-The application uses the Spotify Web Playback SDK for playing music directly in the browser. Note that:
-
-- A Spotify Premium account is required for using the Web Playback SDK
-- Users need to authenticate with Spotify to enable playback
-- The SDK only works in secure contexts (HTTPS or localhost)
 
 ## Deployment
 
