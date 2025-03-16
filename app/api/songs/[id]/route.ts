@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { updateSong, deleteSong } from "@/app/lib/supabase";
 import { z } from "zod";
 
@@ -15,12 +15,13 @@ const songUpdateSchema = z.object({
   spotifyUrl: z.string().url().optional(),
 });
 
+// Using the exact format from Next.js documentation
 export async function PUT(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const songId = context.params.id;
+    const songId = params.id;
     const body = await request.json();
 
     // Validate the request body
@@ -63,10 +64,10 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const songId = context.params.id;
+    const songId = params.id;
 
     try {
       const success = await deleteSong(songId);
