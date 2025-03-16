@@ -10,11 +10,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function getSongs() {
-  const { data, error } = await supabase
-    .from("songs")
-    .select("*")
-    .order("added_at", { ascending: false });
+export async function getSongs(startDate?: string, endDate?: string) {
+  let query = supabase.from("songs").select("*");
+
+  // Apply date filters if provided
+  if (startDate) {
+    query = query.gte("added_at", startDate);
+  }
+
+  if (endDate) {
+    query = query.lte("added_at", endDate);
+  }
+
+  // Apply ordering
+  const { data, error } = await query.order("added_at", { ascending: false });
 
   if (error) {
     // Error fetching songs

@@ -15,9 +15,15 @@ const songSchema = z.object({
   spotifyUrl: z.string().url().optional(),
 });
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
-    const songs = await getSongs();
+    // Get query parameters
+    const searchParams = request.nextUrl.searchParams;
+    const startDate = searchParams.get("startDate") || undefined;
+    const endDate = searchParams.get("endDate") || undefined;
+
+    // Pass date parameters to getSongs
+    const songs = await getSongs(startDate, endDate);
     return NextResponse.json(songs);
   } catch (error) {
     // Error in GET /api/songs
