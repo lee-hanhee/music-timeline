@@ -23,6 +23,7 @@ import {
 } from "@/app/components/ui/dialog";
 import ThrowbackCard from "./ThrowbackCard";
 import { Clock } from "lucide-react";
+import Image from "next/image";
 
 export default function Timeline() {
   const { toast } = useToast();
@@ -169,6 +170,7 @@ export default function Timeline() {
                     <AvatarImage
                       src={getUserProfilePicture(song.addedBy)}
                       alt={song.addedBy}
+                      loading="lazy"
                     />
                     <AvatarFallback>
                       {getUserInitials(song.addedBy)}
