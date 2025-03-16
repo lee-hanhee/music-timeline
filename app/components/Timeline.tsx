@@ -106,6 +106,15 @@ export default function Timeline() {
     return colors[name as keyof typeof colors] || "bg-gray-500";
   };
 
+  const getUserProfilePicture = (name: string) => {
+    const profilePictures = {
+      Kate: "/assets/profiles/kate.jpg",
+      Victor: "/assets/profiles/victor.jpg",
+      Hanhee: "/assets/profiles/hanhee.jpg",
+    };
+    return profilePictures[name as keyof typeof profilePictures];
+  };
+
   if (isLoading) {
     return (
       <Card>
@@ -157,6 +166,10 @@ export default function Timeline() {
               <div key={song.id} className="flex">
                 <div className="mr-4">
                   <Avatar className={`${getUserColor(song.addedBy)}`}>
+                    <AvatarImage
+                      src={getUserProfilePicture(song.addedBy)}
+                      alt={song.addedBy}
+                    />
                     <AvatarFallback>
                       {getUserInitials(song.addedBy)}
                     </AvatarFallback>

@@ -25,14 +25,11 @@ export default function SongForm() {
   const { toast } = useToast();
   const [songName, setSongName] = useState("");
   const [user, setUser] = useState<User | "">("");
-  const [memoryNote, setMemoryNote] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<{
     spotify: SpotifySong[];
   }>({ spotify: [] });
   const [selectedSong, setSelectedSong] = useState<SpotifySong | null>(null);
-
-  const MAX_NOTE_LENGTH = 200;
 
   const handleSearch = async () => {
     if (!songName) {
@@ -86,15 +83,6 @@ export default function SongForm() {
       return;
     }
 
-    if (memoryNote && memoryNote.length > MAX_NOTE_LENGTH) {
-      toast({
-        title: "Error",
-        description: `Memory note must be ${MAX_NOTE_LENGTH} characters or less`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
       // Prepare song data
@@ -108,7 +96,6 @@ export default function SongForm() {
         platform: "Spotify" as const,
         spotifyId: selectedSong.id,
         spotifyUrl: selectedSong.external_urls.spotify,
-        memoryNote: memoryNote.trim() || null,
       };
 
       const response = await fetch("/api/songs", {
@@ -130,7 +117,6 @@ export default function SongForm() {
 
       // Reset form
       setSongName("");
-      setMemoryNote("");
       setSelectedSong(null);
       setSearchResults({ spotify: [] });
     } catch (error) {
@@ -220,37 +206,10 @@ export default function SongForm() {
             </div>
           )}
 
-          <div className="space-y-2">
-            <div className="flex justify-between items-center">
-              <Label htmlFor="memoryNote">Memory Note (Optional)</Label>
-              <span
-                className={`text-xs ${
-                  memoryNote.length > MAX_NOTE_LENGTH
-                    ? "text-red-500"
-                    : "text-muted-foreground"
-                }`}
-              >
-                {memoryNote.length}/{MAX_NOTE_LENGTH}
-              </span>
-            </div>
-            <Textarea
-              id="memoryNote"
-              value={memoryNote}
-              onChange={(e) => setMemoryNote(e.target.value)}
-              placeholder="Add a personal memory or note about this song..."
-              className="min-h-[80px] resize-y"
-            />
-          </div>
-
           <Button
             type="submit"
             className="w-full"
-            disabled={
-              isLoading ||
-              !user ||
-              !selectedSong ||
-              memoryNote.length > MAX_NOTE_LENGTH
-            }
+            disabled={isLoading || !user || !selectedSong}
           >
             {isLoading ? "Adding..." : "Add to Timeline"}
           </Button>

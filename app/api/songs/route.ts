@@ -13,7 +13,6 @@ const songSchema = z.object({
   platform: z.enum(["Spotify"]),
   spotifyId: z.string().optional(),
   spotifyUrl: z.string().url().optional(),
-  memoryNote: z.string().max(200).nullable().optional(),
 });
 
 export async function GET() {
