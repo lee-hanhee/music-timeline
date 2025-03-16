@@ -130,6 +130,7 @@ export async function getSongsByUser(user: string) {
     memoryNote: song.memory_note || null,
   }));
 }
+<<<<<<< HEAD
 
 export async function getThrowbackSong() {
   try {
@@ -215,3 +216,5 @@ export async function updateMemoryNote(
     throw error;
   }
 }
+=======
+>>>>>>> parent of c99ca4a (added throwback feature and also light and dark mode)
