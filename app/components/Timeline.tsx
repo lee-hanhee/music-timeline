@@ -22,7 +22,8 @@ import {
   DialogTitle,
 } from "@/app/components/ui/dialog";
 import ThrowbackCard from "./ThrowbackCard";
-import { Clock } from "lucide-react";
+import MemoryNoteCard from "./MemoryNoteCard";
+import { Clock, MessageSquare } from "lucide-react";
 
 export default function Timeline() {
   const { toast } = useToast();
@@ -33,6 +34,9 @@ export default function Timeline() {
   const [throwbackSong, setThrowbackSong] = useState<Song | null>(null);
   const [showThrowback, setShowThrowback] = useState(false);
   const [isLoadingThrowback, setIsLoadingThrowback] = useState(false);
+  const [selectedMemorySong, setSelectedMemorySong] = useState<Song | null>(
+    null
+  );
 
   useEffect(() => {
     fetchSongs();
@@ -82,6 +86,13 @@ export default function Timeline() {
     } finally {
       setIsLoadingThrowback(false);
     }
+  };
+
+  const handleMemoryNoteUpdate = (updatedSong: Song) => {
+    setSongs((prevSongs) =>
+      prevSongs.map((song) => (song.id === updatedSong.id ? updatedSong : song))
+    );
+    setSelectedMemorySong(updatedSong);
   };
 
   const formatDate = (dateString: string) => {
@@ -186,6 +197,13 @@ export default function Timeline() {
                       <p className="text-sm text-muted-foreground">
                         {song.album}
                       </p>
+                      {song.memoryNote && (
+                        <div className="mt-1 p-2 bg-muted/30 rounded-md text-xs text-muted-foreground line-clamp-2">
+                          <p className="whitespace-pre-wrap">
+                            {song.memoryNote}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="flex space-x-2">
@@ -200,6 +218,15 @@ export default function Timeline() {
                     >
                       Open in Spotify
                     </Button>
+                    <Button
+                      size="sm"
+                      variant={song.memoryNote ? "default" : "outline"}
+                      onClick={() => setSelectedMemorySong(song)}
+                      className="flex items-center gap-1"
+                    >
+                      <MessageSquare className="h-4 w-4" />
+                      <span>{song.memoryNote ? "View Note" : "Add Note"}</span>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -213,6 +240,14 @@ export default function Timeline() {
           song={throwbackSong}
           onClose={() => setShowThrowback(false)}
           isLoading={isLoadingThrowback}
+        />
+      )}
+
+      {selectedMemorySong && (
+        <MemoryNoteCard
+          song={selectedMemorySong}
+          onClose={() => setSelectedMemorySong(null)}
+          onUpdate={handleMemoryNoteUpdate}
         />
       )}
 

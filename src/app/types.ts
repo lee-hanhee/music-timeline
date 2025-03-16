@@ -74,4 +74,5 @@ export interface Song {
   platform: string;
   spotifyId?: string;
   spotifyUrl?: string;
+  memoryNote?: string | null;
 }

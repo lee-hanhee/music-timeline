@@ -33,6 +33,7 @@ export async function getSongs() {
     platform: song.platform,
     spotifyId: song.spotify_id,
     spotifyUrl: song.spotify_url,
+    memoryNote: song.memory_note || null,
   }));
 }
 
@@ -46,6 +47,7 @@ export async function addSong(song: {
   platform: string;
   spotifyId?: string;
   spotifyUrl?: string;
+  memoryNote?: string;
 }) {
   try {
     console.log("Adding song to Supabase:", song);
@@ -65,6 +67,7 @@ export async function addSong(song: {
           platform: song.platform,
           spotify_id: song.spotifyId,
           spotify_url: song.spotifyUrl,
+          memory_note: song.memoryNote || null,
         },
       ])
       .select();
@@ -88,6 +91,7 @@ export async function addSong(song: {
         platform: data[0].platform,
         spotifyId: data[0].spotify_id,
         spotifyUrl: data[0].spotify_url,
+        memoryNote: data[0].memory_note || null,
       };
     }
 
@@ -123,6 +127,7 @@ export async function getSongsByUser(user: string) {
     platform: song.platform,
     spotifyId: song.spotify_id,
     spotifyUrl: song.spotify_url,
+    memoryNote: song.memory_note || null,
   }));
 }
 
@@ -168,5 +173,45 @@ export async function getThrowbackSong() {
   } catch (error) {
     console.error("Exception getting throwback song:", error);
     return null;
+  }
+}
+
+export async function updateMemoryNote(
+  songId: string,
+  memoryNote: string | null
+) {
+  try {
+    const { data, error } = await supabase
+      .from("songs")
+      .update({ memory_note: memoryNote })
+      .eq("id", songId)
+      .select();
+
+    if (error) {
+      console.error("Error updating memory note:", error);
+      throw error;
+    }
+
+    if (data && data[0]) {
+      return {
+        id: data[0].id,
+        name: data[0].name,
+        artist: data[0].artist,
+        album: data[0].album,
+        coverUrl: data[0].cover_url,
+        previewUrl: data[0].preview_url,
+        addedBy: data[0].added_by,
+        addedAt: data[0].added_at,
+        platform: data[0].platform,
+        spotifyId: data[0].spotify_id,
+        spotifyUrl: data[0].spotify_url,
+        memoryNote: data[0].memory_note || null,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    console.error("Exception updating memory note:", error);
+    throw error;
   }
 }
