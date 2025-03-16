@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const error = searchParams.get("error");
 
     if (error) {
-      console.error("Spotify auth error:", error);
+      // Spotify auth error
       return NextResponse.redirect(new URL("/?auth=error", request.url));
     }
 
@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     // Redirect back to the app
     return NextResponse.redirect(new URL("/?auth=success", request.url));
   } catch (error) {
-    console.error("Error in Spotify callback route:", error);
+    // Error in Spotify callback route
     return NextResponse.redirect(new URL("/?auth=error", request.url));
   }
 }

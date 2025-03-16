@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(playlists);
   } catch (error) {
-    console.error("Error in GET /api/spotify/playlists:", error);
+    // Error in GET /api/spotify/playlists
     return NextResponse.json(
       { error: "Failed to fetch playlists" },
       { status: 500 }

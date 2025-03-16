@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
     // Redirect the user to the Spotify authorization page
     return NextResponse.redirect(authUrl);
   } catch (error) {
-    console.error("Error in Spotify auth route:", error);
+    // Error in Spotify auth route
     return NextResponse.json(
       { error: "Failed to authenticate with Spotify" },
       { status: 500 }

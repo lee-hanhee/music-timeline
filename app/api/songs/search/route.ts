@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error("Error in GET /api/songs/search:", error);
+    // Error in GET /api/songs/search
     return NextResponse.json(
       { error: "Failed to search songs" },
       { status: 500 }

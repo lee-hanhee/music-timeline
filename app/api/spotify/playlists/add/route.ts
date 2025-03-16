@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error) {
-    console.error("Error in POST /api/spotify/playlists/add:", error);
+    // Error in POST /api/spotify/playlists/add
     return NextResponse.json(
       { error: "Failed to add track to playlist" },
       { status: 500 }

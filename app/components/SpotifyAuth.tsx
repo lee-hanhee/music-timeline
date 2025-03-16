@@ -14,19 +14,16 @@ export default function SpotifyAuth() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if the user is authenticated with Spotify
     const checkAuth = async () => {
       try {
-        setIsLoading(true);
         const token = getCookie("spotify_access_token");
-
         if (!token) {
           setIsAuthenticated(false);
           setIsLoading(false);
           return;
         }
 
-        // Fetch the user profile to verify the token
+        // Verify token by fetching user profile
         const response = await fetch("https://api.spotify.com/v1/me", {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -34,16 +31,34 @@ export default function SpotifyAuth() {
         });
 
         if (response.ok) {
-          const profile = await response.json();
-          setUserProfile(profile);
+          const data = await response.json();
+          setUserProfile(data);
           setIsAuthenticated(true);
+          toast({
+            title: "Connected to Spotify",
+            description: `Logged in as ${data.display_name}`,
+          });
         } else {
-          // Token might be expired
+          // Token is invalid or expired
+          deleteCookie("spotify_access_token");
+          deleteCookie("spotify_refresh_token");
           setIsAuthenticated(false);
+
+          if (response.status === 401) {
+            toast({
+              title: "Session expired",
+              description: "Please reconnect with Spotify",
+              variant: "destructive",
+            });
+          }
         }
       } catch (error) {
-        console.error("Error checking Spotify auth:", error);
         setIsAuthenticated(false);
+        toast({
+          title: "Authentication Error",
+          description: "Failed to verify Spotify connection",
+          variant: "destructive",
+        });
       } finally {
         setIsLoading(false);
       }
@@ -81,14 +96,18 @@ export default function SpotifyAuth() {
     return null;
   };
 
+  const deleteCookie = (name: string) => {
+    document.cookie = `${name}=; Max-Age=0; path=/; SameSite=Lax`;
+  };
+
   const handleLogin = () => {
     window.location.href = "/api/auth/spotify";
   };
 
   const handleLogout = () => {
     // Clear the cookies
-    document.cookie = "spotify_access_token=; Max-Age=0; path=/; SameSite=Lax";
-    document.cookie = "spotify_refresh_token=; Max-Age=0; path=/; SameSite=Lax";
+    deleteCookie("spotify_access_token");
+    deleteCookie("spotify_refresh_token");
     setIsAuthenticated(false);
     setUserProfile(null);
     toast({

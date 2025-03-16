@@ -27,7 +27,7 @@ export async function getSpotifyClientToken(): Promise<string> {
     const data = await response.json();
     return data.access_token;
   } catch (error) {
-    console.error("Error getting Spotify token:", error);
+    // Error getting Spotify token
     throw error;
   }
 }
@@ -55,7 +55,7 @@ export async function searchSpotify(query: string): Promise<SpotifySong[]> {
     const data = await response.json();
     return data.tracks.items;
   } catch (error) {
-    console.error("Error searching Spotify:", error);
+    // Error searching Spotify
     return [];
   }
 }
@@ -78,7 +78,7 @@ export async function getSpotifyTrack(id: string): Promise<SpotifySong | null> {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error getting Spotify track:", error);
+    // Error getting Spotify track
     return null;
   }
 }
@@ -129,7 +129,7 @@ export async function getSpotifyAccessToken(code: string): Promise<{
 
     return await response.json();
   } catch (error) {
-    console.error("Error getting Spotify access token:", error);
+    // Error getting Spotify access token
     throw error;
   }
 }
@@ -160,7 +160,7 @@ export async function refreshSpotifyToken(refreshToken: string): Promise<{
 
     return await response.json();
   } catch (error) {
-    console.error("Error refreshing Spotify token:", error);
+    // Error refreshing Spotify token
     throw error;
   }
 }
@@ -182,7 +182,7 @@ export async function getSpotifyUserProfile(
 
     return await response.json();
   } catch (error) {
-    console.error("Error getting Spotify user profile:", error);
+    // Error getting Spotify user profile
     throw error;
   }
 }
@@ -205,7 +205,7 @@ export async function getUserPlaylists(
     const data = await response.json();
     return data.items;
   } catch (error) {
-    console.error("Error getting user playlists:", error);
+    // Error getting user playlists
     return [];
   }
 }
@@ -237,7 +237,7 @@ export async function addTrackToPlaylist(
 
     return true;
   } catch (error) {
-    console.error("Error adding track to playlist:", error);
+    // Error adding track to playlist
     return false;
   }
 }
@@ -272,7 +272,7 @@ export async function createPlaylist(
 
     return await response.json();
   } catch (error) {
-    console.error("Error creating playlist:", error);
+    // Error creating playlist
     return null;
   }
 }

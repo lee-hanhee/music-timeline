@@ -14,7 +14,7 @@ export async function GET() {
 
     return NextResponse.json(throwbackSong);
   } catch (error) {
-    console.error("Error in GET /api/throwback:", error);
+    // Error in GET /api/throwback
     return NextResponse.json(
       { error: "Failed to fetch throwback song" },
       { status: 500 }

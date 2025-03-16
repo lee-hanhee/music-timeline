@@ -3,8 +3,9 @@ import { createClient } from "@supabase/supabase-js";
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
+// Check for required environment variables
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Missing Supabase environment variables");
+  // Missing Supabase environment variables
 }
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -16,7 +17,7 @@ export async function getSongs() {
     .order("added_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching songs:", error);
+    // Error fetching songs
     return [];
   }
 
@@ -48,8 +49,6 @@ export async function addSong(song: {
   spotifyUrl?: string;
 }) {
   try {
-    console.log("Adding song to Supabase:", song);
-
     // Convert camelCase to snake_case for database
     const { data, error } = await supabase
       .from("songs")
@@ -70,7 +69,7 @@ export async function addSong(song: {
       .select();
 
     if (error) {
-      console.error("Supabase error adding song:", JSON.stringify(error));
+      // Supabase error adding song
       throw error;
     }
 
@@ -93,7 +92,7 @@ export async function addSong(song: {
 
     return null;
   } catch (error) {
-    console.error("Exception adding song:", error);
+    // Exception adding song
     throw error;
   }
 }
@@ -106,7 +105,7 @@ export async function getSongsByUser(user: string) {
     .order("added_at", { ascending: false });
 
   if (error) {
-    console.error("Error fetching songs by user:", error);
+    // Error fetching songs by user
     return [];
   }
 
@@ -141,12 +140,11 @@ export async function getThrowbackSong() {
       .limit(1);
 
     if (error) {
-      console.error("Error fetching throwback song:", error);
+      // Error fetching throwback song
       return null;
     }
 
     if (!data || data.length === 0) {
-      console.log("No throwback songs found");
       return null;
     }
 
@@ -166,7 +164,7 @@ export async function getThrowbackSong() {
       spotifyUrl: song.spotify_url,
     };
   } catch (error) {
-    console.error("Exception getting throwback song:", error);
+    // Exception getting throwback song
     return null;
   }
 }

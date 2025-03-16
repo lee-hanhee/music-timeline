@@ -20,7 +20,7 @@ export async function GET() {
     const songs = await getSongs();
     return NextResponse.json(songs);
   } catch (error) {
-    console.error("Error in GET /api/songs:", error);
+    // Error in GET /api/songs
     return NextResponse.json(
       { error: "Failed to fetch songs" },
       { status: 500 }
@@ -31,12 +31,11 @@ export async function GET() {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    console.log("Received song data:", body);
 
     // Validate the request body
     const result = songSchema.safeParse(body);
     if (!result.success) {
-      console.error("Validation error:", result.error.format());
+      // Validation error
       return NextResponse.json(
         { error: "Invalid song data", details: result.error.format() },
         { status: 400 }
@@ -47,7 +46,7 @@ export async function POST(request: NextRequest) {
       const song = await addSong(result.data);
       return NextResponse.json(song, { status: 201 });
     } catch (error: any) {
-      console.error("Error from addSong:", error);
+      // Error from addSong
       return NextResponse.json(
         {
           error: "Failed to add song to database",
@@ -58,7 +57,7 @@ export async function POST(request: NextRequest) {
       );
     }
   } catch (error: any) {
-    console.error("Error in POST /api/songs:", error);
+    // Error in POST /api/songs
     return NextResponse.json(
       {
         error: "Failed to process request",
