@@ -50,22 +50,22 @@ export async function addSong(song: {
 }) {
   try {
     // Convert camelCase to snake_case for database
+    const songData: Record<string, any> = {
+      name: song.name,
+      artist: song.artist,
+      album: song.album,
+      cover_url: song.coverUrl,
+      preview_url: song.previewUrl,
+      added_by: song.addedBy,
+      added_at: new Date().toISOString(),
+      platform: song.platform,
+      spotify_id: song.spotifyId,
+      spotify_url: song.spotifyUrl,
+    };
+
     const { data, error } = await supabase
       .from("songs")
-      .insert([
-        {
-          name: song.name,
-          artist: song.artist,
-          album: song.album,
-          cover_url: song.coverUrl,
-          preview_url: song.previewUrl,
-          added_by: song.addedBy,
-          added_at: new Date().toISOString(),
-          platform: song.platform,
-          spotify_id: song.spotifyId,
-          spotify_url: song.spotifyUrl,
-        },
-      ])
+      .insert([songData])
       .select();
 
     if (error) {
@@ -166,5 +166,84 @@ export async function getThrowbackSong() {
   } catch (error) {
     // Exception getting throwback song
     return null;
+  }
+}
+
+export async function updateSong(
+  songId: string,
+  updates: {
+    name?: string;
+    artist?: string;
+    album?: string;
+    coverUrl?: string;
+    previewUrl?: string;
+    addedBy?: string;
+    platform?: string;
+    spotifyId?: string;
+    spotifyUrl?: string;
+  }
+) {
+  try {
+    // Convert camelCase to snake_case for database
+    const dbUpdates: Record<string, any> = {};
+
+    if (updates.name) dbUpdates.name = updates.name;
+    if (updates.artist) dbUpdates.artist = updates.artist;
+    if (updates.album) dbUpdates.album = updates.album;
+    if (updates.coverUrl) dbUpdates.cover_url = updates.coverUrl;
+    if (updates.previewUrl) dbUpdates.preview_url = updates.previewUrl;
+    if (updates.addedBy) dbUpdates.added_by = updates.addedBy;
+    if (updates.platform) dbUpdates.platform = updates.platform;
+    if (updates.spotifyId) dbUpdates.spotify_id = updates.spotifyId;
+    if (updates.spotifyUrl) dbUpdates.spotify_url = updates.spotifyUrl;
+
+    const { data, error } = await supabase
+      .from("songs")
+      .update(dbUpdates)
+      .eq("id", songId)
+      .select();
+
+    if (error) {
+      // Supabase error updating song
+      throw error;
+    }
+
+    // Convert snake_case back to camelCase for frontend
+    if (data && data[0]) {
+      return {
+        id: data[0].id,
+        name: data[0].name,
+        artist: data[0].artist,
+        album: data[0].album,
+        coverUrl: data[0].cover_url,
+        previewUrl: data[0].preview_url,
+        addedBy: data[0].added_by,
+        addedAt: data[0].added_at,
+        platform: data[0].platform,
+        spotifyId: data[0].spotify_id,
+        spotifyUrl: data[0].spotify_url,
+      };
+    }
+
+    return null;
+  } catch (error) {
+    // Exception updating song
+    throw error;
+  }
+}
+
+export async function deleteSong(songId: string) {
+  try {
+    const { error } = await supabase.from("songs").delete().eq("id", songId);
+
+    if (error) {
+      // Supabase error deleting song
+      throw error;
+    }
+
+    return true;
+  } catch (error) {
+    // Exception deleting song
+    throw error;
   }
 }
