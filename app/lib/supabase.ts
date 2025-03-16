@@ -125,3 +125,48 @@ export async function getSongsByUser(user: string) {
     spotifyUrl: song.spotify_url,
   }));
 }
+
+export async function getThrowbackSong() {
+  try {
+    // Calculate date 2 weeks ago
+    const twoWeeksAgo = new Date();
+    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+
+    // Query for songs older than 2 weeks
+    const { data, error } = await supabase
+      .from("songs")
+      .select("*")
+      .lt("added_at", twoWeeksAgo.toISOString())
+      .order("RANDOM()")
+      .limit(1);
+
+    if (error) {
+      console.error("Error fetching throwback song:", error);
+      return null;
+    }
+
+    if (!data || data.length === 0) {
+      console.log("No throwback songs found");
+      return null;
+    }
+
+    // Convert snake_case to camelCase for frontend use
+    const song = data[0];
+    return {
+      id: song.id,
+      name: song.name,
+      artist: song.artist,
+      album: song.album,
+      coverUrl: song.cover_url,
+      previewUrl: song.preview_url,
+      addedBy: song.added_by,
+      addedAt: song.added_at,
+      platform: song.platform,
+      spotifyId: song.spotify_id,
+      spotifyUrl: song.spotify_url,
+    };
+  } catch (error) {
+    console.error("Exception getting throwback song:", error);
+    return null;
+  }
+}

@@ -21,7 +21,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
-import SpotifyPlayer from "./SpotifyPlayer";
+import ThrowbackCard from "./ThrowbackCard";
+import { Clock } from "lucide-react";
 
 export default function Timeline() {
   const { toast } = useToast();
@@ -29,6 +30,9 @@ export default function Timeline() {
   const [isLoading, setIsLoading] = useState(true);
   const [selectedSong, setSelectedSong] = useState<Song | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [throwbackSong, setThrowbackSong] = useState<Song | null>(null);
+  const [showThrowback, setShowThrowback] = useState(false);
+  const [isLoadingThrowback, setIsLoadingThrowback] = useState(false);
 
   useEffect(() => {
     fetchSongs();
@@ -54,26 +58,29 @@ export default function Timeline() {
     }
   };
 
-  const handleAddToPlaylist = async (song: Song) => {
+  const fetchThrowbackSong = async () => {
+    setIsLoadingThrowback(true);
     try {
-      toast({
-        title: "Adding to playlist",
-        description: `Adding ${song.name} to your Spotify playlist`,
-      });
-
-      // In a real app, this would call the Spotify API with user authentication
-      console.log("Adding to Spotify playlist:", song);
-
-      toast({
-        title: "Success",
-        description: `Added ${song.name} to your Spotify playlist`,
-      });
+      const response = await fetch("/api/throwback");
+      if (!response.ok) {
+        if (response.status === 404) {
+          setThrowbackSong(null);
+          setShowThrowback(true);
+          return;
+        }
+        throw new Error("Failed to fetch throwback song");
+      }
+      const data = await response.json();
+      setThrowbackSong(data);
+      setShowThrowback(true);
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to add ${song.name} to your Spotify playlist`,
+        description: "Failed to fetch throwback song",
         variant: "destructive",
       });
+    } finally {
+      setIsLoadingThrowback(false);
     }
   };
 
@@ -132,8 +139,17 @@ export default function Timeline() {
   return (
     <>
       <Card>
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle>Timeline</CardTitle>
+          <Button
+            onClick={fetchThrowbackSong}
+            variant="outline"
+            className="flex items-center gap-2"
+            disabled={isLoadingThrowback}
+          >
+            <Clock className="h-4 w-4" />
+            <span>Throwback Song</span>
+          </Button>
         </CardHeader>
         <CardContent>
           <div className="space-y-8">
@@ -175,19 +191,14 @@ export default function Timeline() {
                   <div className="flex space-x-2">
                     <Button
                       size="sm"
+                      variant="outline"
                       onClick={() => {
-                        setSelectedSong(song);
-                        setDialogOpen(true);
+                        if (song.spotifyUrl) {
+                          window.open(song.spotifyUrl, "_blank");
+                        }
                       }}
                     >
-                      Play
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => handleAddToPlaylist(song)}
-                    >
-                      Add to Playlist
+                      Open in Spotify
                     </Button>
                   </div>
                 </div>
@@ -196,6 +207,14 @@ export default function Timeline() {
           </div>
         </CardContent>
       </Card>
+
+      {showThrowback && (
+        <ThrowbackCard
+          song={throwbackSong}
+          onClose={() => setShowThrowback(false)}
+          isLoading={isLoadingThrowback}
+        />
+      )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
@@ -219,19 +238,6 @@ export default function Timeline() {
                     {selectedSong.album}
                   </p>
                 </div>
-                {selectedSong.spotifyId ? (
-                  <SpotifyPlayer trackId={selectedSong.spotifyId} />
-                ) : selectedSong.previewUrl ? (
-                  <audio
-                    controls
-                    src={selectedSong.previewUrl}
-                    className="w-full"
-                  />
-                ) : (
-                  <p className="text-sm text-muted-foreground">
-                    No preview available
-                  </p>
-                )}
                 <div className="flex space-x-2 w-full">
                   <Button
                     className="flex-1"
@@ -242,13 +248,6 @@ export default function Timeline() {
                     }}
                   >
                     Open in Spotify
-                  </Button>
-                  <Button
-                    variant="outline"
-                    className="flex-1"
-                    onClick={() => handleAddToPlaylist(selectedSong)}
-                  >
-                    Add to Playlist
                   </Button>
                 </div>
               </>
