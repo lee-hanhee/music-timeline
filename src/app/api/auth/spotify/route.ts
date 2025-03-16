@@ -3,6 +3,8 @@ import { getSpotifyAuthUrl } from "@/app/lib/spotify";
 
 export async function GET(request: NextRequest) {
   try {
+    console.log("Spotify auth route called, request URL:", request.url);
+
     // Check if environment variables are properly set
     if (
       !process.env.SPOTIFY_CLIENT_ID ||
@@ -23,8 +25,17 @@ export async function GET(request: NextRequest) {
     const authUrl = getSpotifyAuthUrl();
     console.log("Redirecting to Spotify auth URL:", authUrl);
 
-    // Redirect the user to the Spotify authorization page
-    return NextResponse.redirect(authUrl);
+    // Try to ensure the redirect works by setting headers
+    const response = NextResponse.redirect(authUrl);
+    response.headers.set("Cache-Control", "no-store, max-age=0");
+    response.headers.set("Pragma", "no-cache");
+
+    console.log(
+      "Sending redirect response with headers:",
+      Object.fromEntries(response.headers.entries())
+    );
+
+    return response;
   } catch (error) {
     console.error("Error in Spotify auth route:", error);
     return NextResponse.json(

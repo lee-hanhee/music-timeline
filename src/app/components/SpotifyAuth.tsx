@@ -120,7 +120,8 @@ export default function SpotifyAuth() {
 
   const handleLogin = () => {
     console.log("Initiating Spotify login");
-    window.location.href = "/api/auth/spotify";
+    // Try opening in a new window to bypass any client-side interception
+    window.open("/api/auth/spotify", "_blank", "width=800,height=600");
   };
 
   const handleLogout = () => {
@@ -178,6 +179,17 @@ export default function SpotifyAuth() {
             <p className="text-xs text-red-500 mt-1">Last error: {authError}</p>
           )}
           <Button onClick={handleLogin}>Connect with Spotify</Button>
+          <p className="text-xs text-muted-foreground mt-2">
+            If the button doesn't work, try the{" "}
+            <a
+              href="https://accounts.spotify.com/authorize?client_id=8b9001803cca4bdbbbf53eb27b2c092a&response_type=code&redirect_uri=https%3A%2F%2Fmusic-timeline.vercel.app%2Fapi%2Fauth%2Fspotify%2Fcallback&scope=user-read-private%20user-read-email%20playlist-read-private%20playlist-modify-private%20playlist-modify-public%20streaming%20user-read-playback-state%20user-modify-playback-state"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline"
+            >
+              direct link
+            </a>
+          </p>
         </>
       )}
     </div>
