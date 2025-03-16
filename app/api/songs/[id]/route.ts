@@ -15,12 +15,14 @@ const songUpdateSchema = z.object({
   spotifyUrl: z.string().url().optional(),
 });
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+// Updated type definition to match Next.js 14 requirements
+type RouteParams = {
+  params: { id: string };
+};
+
+export async function PUT(request: NextRequest, context: RouteParams) {
   try {
-    const songId = params.id;
+    const songId = context.params.id;
     const body = await request.json();
 
     // Validate the request body
@@ -61,12 +63,9 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, context: RouteParams) {
   try {
-    const songId = params.id;
+    const songId = context.params.id;
 
     try {
       const success = await deleteSong(songId);
