@@ -21,6 +21,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog";
+import SpotifyPlayer from "./SpotifyPlayer";
 
 export default function Timeline() {
   const { toast } = useToast();
@@ -57,26 +58,20 @@ export default function Timeline() {
     try {
       toast({
         title: "Adding to playlist",
-        description: `Adding ${song.name} to your ${song.platform} playlist`,
+        description: `Adding ${song.name} to your Spotify playlist`,
       });
 
-      // In a real app, this would call the appropriate API
-      if (song.platform === "Apple Music") {
-        // Call Apple Music API to add to playlist
-        console.log("Adding to Apple Music playlist:", song);
-      } else if (song.platform === "Spotify") {
-        // Call Spotify API to add to playlist
-        console.log("Adding to Spotify playlist:", song);
-      }
+      // In a real app, this would call the Spotify API with user authentication
+      console.log("Adding to Spotify playlist:", song);
 
       toast({
         title: "Success",
-        description: `Added ${song.name} to your ${song.platform} playlist`,
+        description: `Added ${song.name} to your Spotify playlist`,
       });
     } catch (error) {
       toast({
         title: "Error",
-        description: `Failed to add ${song.name} to your ${song.platform} playlist`,
+        description: `Failed to add ${song.name} to your Spotify playlist`,
         variant: "destructive",
       });
     }
@@ -224,7 +219,9 @@ export default function Timeline() {
                     {selectedSong.album}
                   </p>
                 </div>
-                {selectedSong.previewUrl ? (
+                {selectedSong.spotifyId ? (
+                  <SpotifyPlayer trackId={selectedSong.spotifyId} />
+                ) : selectedSong.previewUrl ? (
                   <audio
                     controls
                     src={selectedSong.previewUrl}
@@ -239,16 +236,12 @@ export default function Timeline() {
                   <Button
                     className="flex-1"
                     onClick={() => {
-                      const url =
-                        selectedSong.platform === "Apple Music"
-                          ? selectedSong.appleMusicUrl
-                          : selectedSong.spotifyUrl;
-                      if (url) {
-                        window.open(url, "_blank");
+                      if (selectedSong.spotifyUrl) {
+                        window.open(selectedSong.spotifyUrl, "_blank");
                       }
                     }}
                   >
-                    Open in {selectedSong.platform}
+                    Open in Spotify
                   </Button>
                   <Button
                     variant="outline"

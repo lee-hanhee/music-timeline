@@ -11,10 +11,8 @@ CREATE TABLE IF NOT EXISTS songs (
   preview_url TEXT,
   added_by TEXT NOT NULL CHECK (added_by IN ('Kate', 'Victor', 'Hanhee')),
   added_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-  platform TEXT NOT NULL CHECK (platform IN ('Apple Music', 'Spotify')),
-  apple_music_id TEXT,
+  platform TEXT NOT NULL CHECK (platform IN ('Spotify')),
   spotify_id TEXT,
-  apple_music_url TEXT,
   spotify_url TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );

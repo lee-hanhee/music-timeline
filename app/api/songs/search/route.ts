@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchAppleMusic } from "@/app/lib/apple-music";
 import { searchSpotify } from "@/app/lib/spotify";
-import { AppleMusicSong, SpotifySong } from "@/app/types";
+import { SpotifySong } from "@/app/types";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get("query");
-    const platform = searchParams.get("platform");
 
     if (!query) {
       return NextResponse.json(
@@ -16,19 +14,11 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    let results: { appleMusic?: AppleMusicSong[]; spotify?: SpotifySong[] } =
-      {};
+    let results: { spotify: SpotifySong[] } = { spotify: [] };
 
-    // Search based on platform or both if not specified
-    if (!platform || platform === "apple") {
-      const appleMusicResults = await searchAppleMusic(query);
-      results.appleMusic = appleMusicResults;
-    }
-
-    if (!platform || platform === "spotify") {
-      const spotifyResults = await searchSpotify(query);
-      results.spotify = spotifyResults;
-    }
+    // Search Spotify
+    const spotifyResults = await searchSpotify(query);
+    results.spotify = spotifyResults;
 
     return NextResponse.json(results);
   } catch (error) {

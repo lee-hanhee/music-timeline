@@ -18,7 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card";
-import { AppleMusicSong, SpotifySong, User } from "@/app/types";
+import { SpotifySong, User } from "@/app/types";
 
 export default function SongForm() {
   const { toast } = useToast();
@@ -26,15 +26,9 @@ export default function SongForm() {
   const [user, setUser] = useState<User | "">("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState<{
-    appleMusic?: AppleMusicSong[];
-    spotify?: SpotifySong[];
-  }>({});
-  const [selectedPlatform, setSelectedPlatform] = useState<
-    "Apple Music" | "Spotify" | ""
-  >("");
-  const [selectedSong, setSelectedSong] = useState<
-    AppleMusicSong | SpotifySong | null
-  >(null);
+    spotify: SpotifySong[];
+  }>({ spotify: [] });
+  const [selectedSong, setSelectedSong] = useState<SpotifySong | null>(null);
 
   const handleSearch = async () => {
     if (!songName) {
@@ -88,48 +82,20 @@ export default function SongForm() {
       return;
     }
 
-    if (!selectedPlatform) {
-      toast({
-        title: "Error",
-        description: "Please select a platform",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsLoading(true);
     try {
-      // Prepare song data based on the platform
-      let songData;
-      if (selectedPlatform === "Apple Music" && "attributes" in selectedSong) {
-        const appleSong = selectedSong as AppleMusicSong;
-        songData = {
-          name: appleSong.attributes.name,
-          artist: appleSong.attributes.artistName,
-          album: appleSong.attributes.albumName,
-          coverUrl: appleSong.attributes.artwork.url,
-          previewUrl: appleSong.attributes.previews?.[0]?.url,
-          addedBy: user,
-          platform: selectedPlatform,
-          appleMusicId: appleSong.id,
-          appleMusicUrl: appleSong.attributes.url,
-        };
-      } else if (selectedPlatform === "Spotify" && "artists" in selectedSong) {
-        const spotifySong = selectedSong as SpotifySong;
-        songData = {
-          name: spotifySong.name,
-          artist: spotifySong.artists[0].name,
-          album: spotifySong.album.name,
-          coverUrl: spotifySong.album.images[0].url,
-          previewUrl: spotifySong.preview_url || undefined,
-          addedBy: user,
-          platform: selectedPlatform,
-          spotifyId: spotifySong.id,
-          spotifyUrl: spotifySong.external_urls.spotify,
-        };
-      } else {
-        throw new Error("Invalid song or platform selection");
-      }
+      // Prepare song data
+      const songData = {
+        name: selectedSong.name,
+        artist: selectedSong.artists[0].name,
+        album: selectedSong.album.name,
+        coverUrl: selectedSong.album.images[0].url,
+        previewUrl: selectedSong.preview_url || undefined,
+        addedBy: user,
+        platform: "Spotify" as const,
+        spotifyId: selectedSong.id,
+        spotifyUrl: selectedSong.external_urls.spotify,
+      };
 
       const response = await fetch("/api/songs", {
         method: "POST",
@@ -151,7 +117,7 @@ export default function SongForm() {
       // Reset form
       setSongName("");
       setSelectedSong(null);
-      setSearchResults({});
+      setSearchResults({ spotify: [] });
     } catch (error) {
       toast({
         title: "Error",
@@ -206,76 +172,7 @@ export default function SongForm() {
             </div>
           </div>
 
-          {searchResults.appleMusic?.length || searchResults.spotify?.length ? (
-            <div className="space-y-2">
-              <Label>Select Platform</Label>
-              <div className="flex space-x-2">
-                {searchResults.appleMusic?.length ? (
-                  <Button
-                    type="button"
-                    variant={
-                      selectedPlatform === "Apple Music" ? "default" : "outline"
-                    }
-                    onClick={() => setSelectedPlatform("Apple Music")}
-                    className="flex-1"
-                  >
-                    Apple Music
-                  </Button>
-                ) : null}
-                {searchResults.spotify?.length ? (
-                  <Button
-                    type="button"
-                    variant={
-                      selectedPlatform === "Spotify" ? "default" : "outline"
-                    }
-                    onClick={() => setSelectedPlatform("Spotify")}
-                    className="flex-1"
-                  >
-                    Spotify
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
-
-          {selectedPlatform === "Apple Music" &&
-          searchResults.appleMusic?.length ? (
-            <div className="space-y-2">
-              <Label>Select Song</Label>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {searchResults.appleMusic.map((song) => (
-                  <div
-                    key={song.id}
-                    className={`p-2 border rounded-md cursor-pointer ${
-                      selectedSong === song ? "border-primary bg-accent" : ""
-                    }`}
-                    onClick={() => setSelectedSong(song)}
-                  >
-                    <div className="flex items-center space-x-2">
-                      {song.attributes.artwork?.url && (
-                        <img
-                          src={song.attributes.artwork.url.replace(
-                            "{w}x{h}",
-                            "60x60"
-                          )}
-                          alt={song.attributes.name}
-                          className="w-12 h-12 rounded"
-                        />
-                      )}
-                      <div>
-                        <p className="font-medium">{song.attributes.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {song.attributes.artistName}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : null}
-
-          {selectedPlatform === "Spotify" && searchResults.spotify?.length ? (
+          {searchResults.spotify?.length > 0 && (
             <div className="space-y-2">
               <Label>Select Song</Label>
               <div className="space-y-2 max-h-60 overflow-y-auto">
@@ -306,12 +203,12 @@ export default function SongForm() {
                 ))}
               </div>
             </div>
-          ) : null}
+          )}
 
           <Button
             type="submit"
             className="w-full"
-            disabled={isLoading || !user || !selectedSong || !selectedPlatform}
+            disabled={isLoading || !user || !selectedSong}
           >
             {isLoading ? "Adding..." : "Add to Timeline"}
           </Button>

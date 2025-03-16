@@ -10,10 +10,8 @@ const songSchema = z.object({
   coverUrl: z.string().url(),
   previewUrl: z.string().url().optional(),
   addedBy: z.enum(["Kate", "Victor", "Hanhee"]),
-  platform: z.enum(["Apple Music", "Spotify"]),
-  appleMusicId: z.string().optional(),
+  platform: z.enum(["Spotify"]),
   spotifyId: z.string().optional(),
-  appleMusicUrl: z.string().url().optional(),
   spotifyUrl: z.string().url().optional(),
 });
 

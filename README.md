@@ -1,14 +1,15 @@
 # Music Timeline
 
-A full-stack web application that allows users to create a shared music timeline. Users can search for songs using Apple Music and Spotify APIs, add them to a timeline, play previews, and add songs to their playlists.
+A full-stack web application that allows users to create a shared music timeline. Users can search for songs using the Spotify API, add them to a timeline, play music using the Spotify Web Playback SDK, and add songs to their Spotify playlists.
 
 ## Features
 
-- Search for songs using Apple Music and Spotify APIs
+- Search for songs using the Spotify API
 - Add songs to a shared timeline
-- Play song previews
-- Add songs to Apple Music or Spotify playlists
+- Play music using the Spotify Web Playback SDK
+- Add songs to Spotify playlists
 - User-specific timelines (Kate, Victor, Hanhee)
+- Spotify authentication for playlist management and playback
 - Modern UI with ShadCN UI components
 
 ## Tech Stack
@@ -16,15 +17,14 @@ A full-stack web application that allows users to create a shared music timeline
 - **Frontend**: Next.js, React, TypeScript, TailwindCSS, ShadCN UI
 - **Backend**: Next.js API Routes
 - **Database**: PostgreSQL (Supabase)
-- **Authentication**: Supabase Auth
-- **APIs**: Apple Music API, Spotify API
+- **Authentication**: Spotify OAuth
+- **APIs**: Spotify Web API, Spotify Web Playback SDK
 
 ## Prerequisites
 
 - Node.js 18+ and npm
 - Supabase account
-- Apple Music API Developer Token
-- Spotify API Client ID and Secret
+- Spotify Developer account with API credentials
 
 ## Environment Variables
 
@@ -33,9 +33,9 @@ Create a `.env.local` file in the root directory with the following variables:
 ```
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-APPLE_MUSIC_API_TOKEN=your_apple_music_api_token
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/spotify/callback
 ```
 
 ## Database Setup
@@ -76,6 +76,13 @@ You can find this key in your Supabase project settings under API > Project API 
 
 **Warning:** The service role key has admin privileges. Never expose it in client-side code or commit it to your repository.
 
+## Spotify Developer Setup
+
+1. Create a Spotify Developer account at [developer.spotify.com](https://developer.spotify.com/)
+2. Create a new application in the Spotify Developer Dashboard
+3. Add `http://localhost:3000/api/auth/spotify/callback` as a Redirect URI in your Spotify app settings
+4. Copy your Client ID and Client Secret to your `.env.local` file
+
 ## Installation
 
 1. Clone the repository
@@ -93,6 +100,14 @@ npm run dev
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+## Spotify Web Playback SDK
+
+The application uses the Spotify Web Playback SDK for playing music directly in the browser. Note that:
+
+- A Spotify Premium account is required for using the Web Playback SDK
+- Users need to authenticate with Spotify to enable playback
+- The SDK only works in secure contexts (HTTPS or localhost)
+
 ## Deployment
 
 This application can be deployed on Vercel:
@@ -100,13 +115,18 @@ This application can be deployed on Vercel:
 1. Push your code to a GitHub repository
 2. Connect your repository to Vercel
 3. Configure the environment variables in Vercel
-4. Deploy
+4. Update the Spotify Redirect URI in your Spotify Developer Dashboard to match your production URL
+5. Deploy
 
 ## API Routes
 
 - `GET /api/songs` - Get all songs in the timeline
 - `POST /api/songs` - Add a new song to the timeline
-- `GET /api/songs/search` - Search for songs using Apple Music and Spotify APIs
+- `GET /api/songs/search` - Search for songs using the Spotify API
+- `GET /api/auth/spotify` - Initiate Spotify authentication
+- `GET /api/auth/spotify/callback` - Handle Spotify authentication callback
+- `GET /api/spotify/playlists` - Get the user's Spotify playlists
+- `POST /api/spotify/playlists/add` - Add a song to a Spotify playlist
 
 ## License
 
