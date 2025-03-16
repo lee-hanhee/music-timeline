@@ -127,20 +127,10 @@ export async function getSongsByUser(user: string) {
 
 export async function getThrowbackSong() {
   try {
-    // Calculate date 2 weeks ago
-    const twoWeeksAgo = new Date();
-    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
-
-    // Query for songs older than 2 weeks
-    const { data, error } = await supabase
-      .from("songs")
-      .select("*")
-      .lt("added_at", twoWeeksAgo.toISOString())
-      .order("RANDOM()")
-      .limit(1);
+    // Get all songs
+    const { data, error } = await supabase.from("songs").select("*");
 
     if (error) {
-      // Error fetching throwback song
       return null;
     }
 
@@ -148,8 +138,46 @@ export async function getThrowbackSong() {
       return null;
     }
 
+    // Filter songs to get those that are at least a month old
+    // Since dates are in 2025, we'll compare month differences
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    const olderSongs = data.filter((song) => {
+      const songDate = new Date(song.added_at);
+      const songMonth = songDate.getMonth();
+      const songYear = songDate.getFullYear();
+
+      // Calculate month difference
+      const monthDiff =
+        (songYear - currentYear) * 12 + (songMonth - currentMonth);
+
+      // Consider songs with month difference <= -1 (at least a month old)
+      // or songs from a different year with appropriate month difference
+      return monthDiff <= -1;
+    });
+
+    // If no songs are at least a month old, get the 5 oldest songs instead
+    const eligibleSongs =
+      olderSongs.length > 0
+        ? olderSongs
+        : [...data]
+            .sort(
+              (a, b) =>
+                new Date(a.added_at).getTime() - new Date(b.added_at).getTime()
+            )
+            .slice(0, 5);
+
+    if (eligibleSongs.length === 0) {
+      return null;
+    }
+
+    // Pick a random song from the eligible songs
+    const randomIndex = Math.floor(Math.random() * eligibleSongs.length);
+    const song = eligibleSongs[randomIndex];
+
     // Convert snake_case to camelCase for frontend use
-    const song = data[0];
     return {
       id: song.id,
       name: song.name,
