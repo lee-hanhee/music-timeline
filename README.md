@@ -116,8 +116,6 @@ This application can be deployed on Vercel:
 - `GET /api/songs/search` - Search for songs using the Spotify API
 - `GET /api/auth/spotify` - Initiate Spotify authentication
 - `GET /api/auth/spotify/callback` - Handle Spotify authentication callback
-- `GET /api/spotify/playlists` - Get the user's Spotify playlists
-- `POST /api/spotify/playlists/add` - Add a song to a Spotify playlist
 
 ## License
 
