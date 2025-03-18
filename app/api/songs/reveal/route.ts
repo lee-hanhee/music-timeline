@@ -1,38 +1,61 @@
+/**
+ * Song Reveal API Endpoints
+ *
+ * This file provides two API routes:
+ * 1. POST - Reveals all hidden songs (sets their revealed status to true)
+ * 2. GET - Gets information about the next scheduled reveal time
+ *
+ * These endpoints are part of the "Sunday Song Reveal" feature where
+ * songs are hidden until Sunday at 12 PM, then automatically revealed.
+ */
+
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabase";
 
-// This endpoint can be called by a cron job set to run at 12 PM every Sunday
-// or manually triggered for testing
+/**
+ * POST Endpoint: Reveal Hidden Songs
+ *
+ * This endpoint can be triggered in two ways:
+ * 1. Automatically by a scheduled task/cron job at 12 PM every Sunday
+ * 2. Manually for testing/administrative purposes
+ *
+ * The endpoint finds all songs where revealed=false and updates them to revealed=true.
+ *
+ * @param request - The incoming HTTP request (may contain authentication)
+ * @returns JSON response with results or error message
+ */
 export async function POST(request: NextRequest) {
   try {
     // Check for an authorization key for security
-    // This is a simple implementation - in production, use proper auth
+    // This prevents unauthorized users from revealing songs
     const authHeader = request.headers.get("authorization");
     const expectedKey = process.env.REVEAL_SONGS_API_KEY;
 
-    // Simple security check - in production, use a more robust solution
+    // If an API key is configured, verify the request has the correct key
     if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get the current date
+    // Get the current date for logging/debugging
     const currentDate = new Date();
 
-    // Optional: Only proceed if it's Sunday (0 is Sunday in JS)
-    // Remove this check if you want to allow manual triggering any day
-    // if (currentDate.getDay() !== 0) {
+    // OPTIONAL FEATURE: Only reveal songs on Sundays
+    // This is commented out to allow manual triggering for testing
+    // Uncomment to enforce Sunday-only reveals
+    // if (currentDate.getDay() !== 0) {  // 0 = Sunday in JavaScript
     //   return NextResponse.json({
     //     message: "Reveal is only allowed on Sundays",
     //     today: currentDate.toISOString()
     //   });
     // }
 
-    // Get all unrevealed songs
+    // Step 1: Find all songs that haven't been revealed yet
     const { data: unrevealed, error: fetchError } = await supabase
       .from("songs")
-      .select("id")
-      .eq("revealed", false);
+      .select("id") // We only need the IDs to count them
+      .eq("revealed", false); // Where revealed = false
 
+    // Handle errors from the database query
     if (fetchError) {
       console.error("Error fetching unrevealed songs:", fetchError);
       return NextResponse.json(
@@ -41,19 +64,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // If there are no unrevealed songs, return early
+    // If no songs need to be revealed, return early with a message
     if (!unrevealed || unrevealed.length === 0) {
       return NextResponse.json({
         message: "No unrevealed songs found",
       });
     }
 
-    // Update all unrevealed songs to be revealed
+    // Step 2: Update all unrevealed songs to be revealed
+    // This sets revealed=true for all songs where revealed=false
     const { error: updateError } = await supabase
       .from("songs")
-      .update({ revealed: true })
-      .eq("revealed", false);
+      .update({ revealed: true }) // Set revealed to true
+      .eq("revealed", false); // For all songs where revealed is false
 
+    // Handle errors from the update operation
     if (updateError) {
       console.error("Error revealing songs:", updateError);
       return NextResponse.json(
@@ -62,12 +87,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Success! Return information about how many songs were revealed
     return NextResponse.json({
       message: `Successfully revealed ${unrevealed.length} songs`,
-      revealedCount: unrevealed.length,
-      timestamp: currentDate.toISOString(),
+      revealedCount: unrevealed.length, // Number of songs that were revealed
+      timestamp: currentDate.toISOString(), // When the reveal happened
     });
   } catch (error: any) {
+    // Catch any unexpected errors
     console.error("Exception in reveal songs endpoint:", error);
     return NextResponse.json(
       {
@@ -79,45 +106,63 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// Provide a GET endpoint for checking next reveal time
+/**
+ * GET Endpoint: Get Next Reveal Time
+ *
+ * This endpoint calculates when the next song reveal will happen
+ * (next Sunday at 12 PM) and how many songs are waiting to be revealed.
+ *
+ * This is used by the countdown timer on the frontend.
+ *
+ * @returns JSON with the next reveal time and pending song count
+ */
 export async function GET() {
   try {
-    // Get the current date
+    // Get the current date and time
     const now = new Date();
 
-    // Find the next Sunday at 12 PM
+    // Create a date object for the next reveal (starting with today)
     const nextSunday = new Date(now);
 
-    // Move to next Sunday (0 is Sunday in JS)
+    // Calculate days until next Sunday
+    // (7 - current day) % 7 gives days until Sunday
+    // e.g., if today is Tuesday (2), then (7-2)%7 = 5 days until Sunday
     nextSunday.setDate(now.getDate() + ((7 - now.getDay()) % 7));
 
-    // If today is Sunday and it's before 12 PM, use today
-    if (now.getDay() === 0 && now.getHours() < 12) {
-      nextSunday.setDate(now.getDate());
-    }
-    // If today is Sunday and it's after 12 PM, use next Sunday
-    else if (now.getDay() === 0 && now.getHours() >= 12) {
-      nextSunday.setDate(now.getDate() + 7);
+    // Special case: If today is already Sunday
+    if (now.getDay() === 0) {
+      // 0 = Sunday
+      // If it's before noon, the reveal is today at noon
+      if (now.getHours() < 12) {
+        nextSunday.setDate(now.getDate()); // Keep today's date
+      }
+      // If it's after noon, the reveal is next Sunday
+      else {
+        nextSunday.setDate(now.getDate() + 7); // Add 7 days
+      }
     }
 
-    // Set to 12 PM
+    // Set the time to exactly 12:00:00 PM
     nextSunday.setHours(12, 0, 0, 0);
 
-    // Get unrevealed song count
+    // Count how many songs are waiting to be revealed
     const { count, error } = await supabase
       .from("songs")
-      .select("*", { count: "exact", head: true })
-      .eq("revealed", false);
+      .select("*", { count: "exact", head: true }) // Only count, don't fetch data
+      .eq("revealed", false); // Where revealed = false
 
+    // Log any errors but don't fail the request
     if (error) {
       console.error("Error counting unrevealed songs:", error);
     }
 
+    // Return the next reveal time and pending song count
     return NextResponse.json({
-      nextReveal: nextSunday.toISOString(),
-      pendingRevealCount: count || 0,
+      nextReveal: nextSunday.toISOString(), // When the next reveal will happen
+      pendingRevealCount: count || 0, // How many songs will be revealed
     });
   } catch (error: any) {
+    // Handle any unexpected errors
     return NextResponse.json(
       { error: "Failed to get next reveal time" },
       { status: 500 }
