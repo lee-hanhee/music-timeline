@@ -24,15 +24,8 @@ export async function GET(request: NextRequest) {
     const endDate = searchParams.get("endDate") || undefined;
     const includeUnrevealed = searchParams.get("includeUnrevealed") === "true";
 
-    console.log("GET /api/songs - Date params:", {
-      startDate,
-      endDate,
-      includeUnrevealed,
-    });
-
     // Pass parameters to getSongs
     const songs = await getSongs(startDate, endDate, includeUnrevealed);
-    console.log(`GET /api/songs - Returning ${songs.length} songs`);
     return NextResponse.json(songs);
   } catch (error) {
     // Error in GET /api/songs

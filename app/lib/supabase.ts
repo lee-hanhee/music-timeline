@@ -16,34 +16,21 @@ export async function getSongs(
   includeUnrevealed: boolean = false
 ) {
   try {
-    console.log("getSongs called with:", {
-      startDate,
-      endDate,
-      includeUnrevealed,
-    });
-
     // Start building the query
     let query = supabase.from("songs").select("*");
 
     // Only include revealed songs by default
     if (!includeUnrevealed) {
-      console.log("Filtering for revealed=true songs only");
       query = query.eq("revealed", true);
     }
 
     // Apply date filters if provided
     if (startDate) {
-      console.log(`Adding start date filter: ${startDate}`);
       query = query.gte("added_at", startDate);
     }
 
     if (endDate) {
-      console.log(`Adding end date filter: ${endDate}`);
       query = query.lte("added_at", endDate);
-    }
-
-    if (!startDate && !endDate) {
-      console.log("No date filters applied - fetching ALL revealed songs");
     }
 
     // Apply ordering
