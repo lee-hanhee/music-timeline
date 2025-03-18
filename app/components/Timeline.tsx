@@ -23,6 +23,7 @@ import {
 } from "@/app/components/ui/dialog";
 import ThrowbackCard from "./ThrowbackCard";
 import DateRangeFilter from "./DateRangeFilter";
+import SongRevealCountdown from "./SongRevealCountdown";
 import { Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format, subDays, subMonths, startOfMonth, endOfMonth } from "date-fns";
@@ -38,10 +39,11 @@ export default function Timeline() {
   const [isLoadingThrowback, setIsLoadingThrowback] = useState(false);
   const [startDate, setStartDate] = useState<string | undefined>(undefined);
   const [endDate, setEndDate] = useState<string | undefined>(undefined);
+  const [revealTriggered, setRevealTriggered] = useState(false);
 
   useEffect(() => {
     fetchSongs();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, revealTriggered]);
 
   // Load saved date range from localStorage on initial render
   useEffect(() => {
@@ -126,6 +128,11 @@ export default function Timeline() {
   ) => {
     setStartDate(newStartDate);
     setEndDate(newEndDate);
+  };
+
+  const handleSongsRevealed = () => {
+    // Trigger a refetch of songs when songs are revealed
+    setRevealTriggered(prev => !prev);
   };
 
   const fetchThrowbackSong = async () => {
@@ -218,6 +225,12 @@ export default function Timeline() {
             </Button>
           </div>
         </CardHeader>
+        
+        {/* Song Reveal Countdown */}
+        <div className="px-6 pb-2">
+          <SongRevealCountdown onSongsRevealed={handleSongsRevealed} />
+        </div>
+        
         <CardContent>
           {songs.length === 0 ? (
             <div className="flex justify-center items-center h-40">

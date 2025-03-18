@@ -10,40 +10,69 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function getSongs(startDate?: string, endDate?: string) {
-  let query = supabase.from("songs").select("*");
+export async function getSongs(
+  startDate?: string,
+  endDate?: string,
+  includeUnrevealed: boolean = false
+) {
+  try {
+    console.log("getSongs called with:", {
+      startDate,
+      endDate,
+      includeUnrevealed,
+    });
 
-  // Apply date filters if provided
-  if (startDate) {
-    query = query.gte("added_at", startDate);
-  }
+    // Start building the query
+    let query = supabase.from("songs").select("*");
 
-  if (endDate) {
-    query = query.lte("added_at", endDate);
-  }
+    // Only include revealed songs by default
+    if (!includeUnrevealed) {
+      console.log("Filtering for revealed=true songs only");
+      query = query.eq("revealed", true);
+    }
 
-  // Apply ordering
-  const { data, error } = await query.order("added_at", { ascending: false });
+    // Apply date filters if provided
+    if (startDate) {
+      console.log(`Adding start date filter: ${startDate}`);
+      query = query.gte("added_at", startDate);
+    }
 
-  if (error) {
-    // Error fetching songs
+    if (endDate) {
+      console.log(`Adding end date filter: ${endDate}`);
+      query = query.lte("added_at", endDate);
+    }
+
+    if (!startDate && !endDate) {
+      console.log("No date filters applied - fetching ALL revealed songs");
+    }
+
+    // Apply ordering
+    const { data, error } = await query.order("added_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching songs:", error);
+      return [];
+    }
+
+    // Convert snake_case to camelCase for frontend use
+    return (data || []).map((song) => ({
+      id: song.id,
+      name: song.name,
+      artist: song.artist,
+      album: song.album,
+      coverUrl: song.cover_url,
+      previewUrl: song.preview_url,
+      addedBy: song.added_by,
+      addedAt: song.added_at,
+      platform: song.platform,
+      spotifyId: song.spotify_id,
+      spotifyUrl: song.spotify_url,
+      revealed: song.revealed,
+    }));
+  } catch (error) {
+    console.error("Exception in getSongs:", error);
     return [];
   }
-
-  // Convert snake_case to camelCase for frontend use
-  return (data || []).map((song) => ({
-    id: song.id,
-    name: song.name,
-    artist: song.artist,
-    album: song.album,
-    coverUrl: song.cover_url,
-    previewUrl: song.preview_url,
-    addedBy: song.added_by,
-    addedAt: song.added_at,
-    platform: song.platform,
-    spotifyId: song.spotify_id,
-    spotifyUrl: song.spotify_url,
-  }));
 }
 
 export async function addSong(song: {
@@ -56,6 +85,7 @@ export async function addSong(song: {
   platform: string;
   spotifyId?: string;
   spotifyUrl?: string;
+  revealed?: boolean;
 }) {
   try {
     // Convert camelCase to snake_case for database
@@ -70,6 +100,7 @@ export async function addSong(song: {
       platform: song.platform,
       spotify_id: song.spotifyId,
       spotify_url: song.spotifyUrl,
+      revealed: song.revealed !== undefined ? song.revealed : false, // Default to false (hidden)
     };
 
     const { data, error } = await supabase
@@ -96,6 +127,7 @@ export async function addSong(song: {
         platform: data[0].platform,
         spotifyId: data[0].spotify_id,
         spotifyUrl: data[0].spotify_url,
+        revealed: data[0].revealed,
       };
     }
 

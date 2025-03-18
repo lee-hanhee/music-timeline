@@ -13,6 +13,7 @@ const songSchema = z.object({
   platform: z.enum(["Spotify"]),
   spotifyId: z.string().optional(),
   spotifyUrl: z.string().url().optional(),
+  revealed: z.boolean().default(false),
 });
 
 export async function GET(request: NextRequest) {
@@ -21,12 +22,21 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const startDate = searchParams.get("startDate") || undefined;
     const endDate = searchParams.get("endDate") || undefined;
+    const includeUnrevealed = searchParams.get("includeUnrevealed") === "true";
 
-    // Pass date parameters to getSongs
-    const songs = await getSongs(startDate, endDate);
+    console.log("GET /api/songs - Date params:", {
+      startDate,
+      endDate,
+      includeUnrevealed,
+    });
+
+    // Pass parameters to getSongs
+    const songs = await getSongs(startDate, endDate, includeUnrevealed);
+    console.log(`GET /api/songs - Returning ${songs.length} songs`);
     return NextResponse.json(songs);
   } catch (error) {
     // Error in GET /api/songs
+    console.error("Error in GET /api/songs:", error);
     return NextResponse.json(
       { error: "Failed to fetch songs" },
       { status: 500 }
