@@ -87,7 +87,21 @@ export async function POST(request: NextRequest) {
 
     try {
       // Add the validated song to the database
-      const song = await addSong(result.data);
+      // Using type assertion to tell TypeScript that the data matches the required type
+      const song = await addSong(
+        result.data as {
+          name: string;
+          artist: string;
+          album: string;
+          coverUrl: string;
+          previewUrl?: string;
+          addedBy: string;
+          platform: string;
+          spotifyId?: string;
+          spotifyUrl?: string;
+          revealed?: boolean;
+        }
+      );
 
       // Return the created song with a 201 Created status
       return NextResponse.json(song, { status: 201 });
