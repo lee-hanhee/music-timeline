@@ -54,8 +54,6 @@ MusicLine is a full-stack web application that allows users to create and share 
 │   │   ├── Header.tsx            # App header
 │   │   ├── SongForm.tsx          # Song addition form
 │   │   ├── SongRevealCountdown.tsx # Weekly song reveal countdown
-│   │   ├── SpotifyAuth.tsx       # Spotify authentication component
-│   │   ├── SpotifyPlayer.tsx     # Embedded Spotify player
 │   │   ├── ThrowbackCard.tsx     # Throwback song display
 │   │   └── Timeline.tsx          # Main timeline component
 │   ├── lib/                      # Utility functions and services
