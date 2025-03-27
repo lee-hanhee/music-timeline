@@ -33,28 +33,3 @@ export interface SpotifySong {
     spotify: string;
   };
 }
-
-export interface SpotifyPlaylist {
-  id: string;
-  name: string;
-  images: {
-    url: string;
-  }[];
-  owner: {
-    display_name: string;
-  };
-  tracks: {
-    total: number;
-  };
-}
-
-export interface SpotifyUserProfile {
-  id: string;
-  display_name: string;
-  images: {
-    url: string;
-  }[];
-  external_urls: {
-    spotify: string;
-  };
-}
