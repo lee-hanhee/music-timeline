@@ -1,3 +1,6 @@
+// This file is used to count the number of pending songs (unrevealed songs)
+// It is used to display the number of pending songs in the timeline
+
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabase";
 
