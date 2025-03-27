@@ -1,3 +1,7 @@
+/* This is your global Tailwind CSS configuration file (globals.css), 
+which defines your custom design system using CSS variables and 
+applies them to light and dark themes through the Tailwind @layer base mechanism. */
+
 @import "tailwindcss/base";
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";

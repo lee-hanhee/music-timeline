@@ -1,3 +1,6 @@
+//The Home function defines the main landing page of the application, organizing the user interface into a header, a form for song input, and a timeline display. 
+// It utilizes responsive layout principles and Tailwind CSS utility classes for styling.
+
 import SongForm from "@/app/components/SongForm";
 import Timeline from "@/app/components/Timeline";
 import Header from "@/app/components/Header";
