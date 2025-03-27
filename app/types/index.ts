@@ -1,3 +1,4 @@
+// This TypeScript file defines type aliases and interfaces.
 export type User = "Kate" | "Victor" | "Hanhee";
 
 export type Platform = "Spotify";
