@@ -350,28 +350,3 @@ export async function updateSong(
     throw error;
   }
 }
-
-/**
- * Delete Song
- *
- * Removes a song from the database.
- *
- * @param songId - The ID of the song to delete
- * @returns True if the song was deleted successfully, otherwise throws an error
- */
-export async function deleteSong(songId: string) {
-  try {
-    // Delete the song from the database
-    const { error } = await supabase.from("songs").delete().eq("id", songId);
-
-    if (error) {
-      // If there was an error, throw it to be caught in the catch block
-      throw error;
-    }
-
-    return true;
-  } catch (error) {
-    // Re-throw the error to be handled by the API route
-    throw error;
-  }
-}
