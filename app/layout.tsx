@@ -1,3 +1,6 @@
+// The RootLayout component defines the root HTML structure and environment for every page in the application. 
+// It ensures that global styles, fonts, metadata, and theming persist across all routes.
+
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans"; // Import from geist package
 import "./globals.css";

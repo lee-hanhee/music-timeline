@@ -2,9 +2,7 @@ import { SpotifySong } from "../types";
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
-const SPOTIFY_REDIRECT_URI =
-  process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI ||
-  "http://localhost:3000/api/auth/spotify/callback";
+const SPOTIFY_REDIRECT_URI = process.env.NEXT_PUBLIC_SPOTIFY_REDIRECT_URI || "http://localhost:3000/api/auth/spotify/callback";
 
 // Get Spotify client credentials token (for non-user-specific API calls)
 export async function getSpotifyClientToken(): Promise<string> {
