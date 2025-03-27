@@ -2,7 +2,13 @@
 
 ## About
 
-MusicLine is a full-stack web application that allows users to create and share a collaborative music timeline. Users can search for songs using the Spotify API, add them to a shared timeline, and add songs to their Spotify playlists. MusicLine provides a social experience for music discovery and sharing, with user-specific timelines and a unique "throwback" feature that surfaces past musical selections.
+MusicLine is a collaborative music timeline application that leverages the Spotify API for song data and playback. The system architecture follows a modern full-stack approach with Next.js serving both the frontend React application and backend API routes.
+
+The application flow begins with users authenticating via Spotify OAuth to gain access to playlist features. Users can search for songs using the Spotify API, with results displayed in real-time. Selected songs are added to a shared timeline stored in a Supabase PostgreSQL database.
+
+The timeline interface displays songs chronologically with user avatars, album artwork, and playback controls. Users can filter the timeline by date ranges or view user-specific timelines. A weekly song reveal system adds engagement by making newly added songs visible only after a countdown timer expires. The throwback feature randomly surfaces older songs to encourage rediscovery.
+
+Data flows from the Spotify API through server-side API routes to protect authentication credentials, while the frontend handles state management and UI interactions. The application prioritizes a responsive, modern interface with animations and sleek design elements, making it accessible across devices.
 
 ## Features
 
@@ -107,106 +113,6 @@ MusicLine is a full-stack web application that allows users to create and share 
   - `SongRevealCountdown.tsx`: Weekly song reveal countdown timer
   - `ThrowbackCard.tsx`: Displays throwback songs
 
-## Local Development
-
-### Prerequisites
-
-- Node.js and npm
-- Supabase account
-- Spotify Developer account with API credentials
-
-### Environment Variables
-
-Create a `.env.local` file in the root directory with the following variables:
-
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SPOTIFY_CLIENT_ID=your_spotify_client_id
-SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
-NEXT_PUBLIC_SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/spotify/callback
-```
-
-### Database Setup
-
-1. Create a new Supabase project
-2. Go to your Supabase project dashboard: https://app.supabase.com/project/_/sql
-3. Open the SQL Editor
-4. Copy the contents of the `fix-database.sql` file from this project
-5. Paste it into the SQL Editor and run it
-
-This will:
-
-- Create the required `songs` table with proper indexes
-- Disable Row Level Security (RLS) for development
-- Test that the table is working correctly
-
-### Installation
-
-1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/music-line.git
-cd music-line
-```
-
-2. Install dependencies
-
-```bash
-npm install
-```
-
-3. Run the development server
-
-```bash
-npm run dev
-```
-
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Deployment
-
-The application is configured for easy deployment on Vercel:
-
-1. Push your code to a GitHub repository
-2. Connect your repository to Vercel
-3. Configure the environment variables in Vercel:
-   - NEXT_PUBLIC_SUPABASE_URL
-   - NEXT_PUBLIC_SUPABASE_ANON_KEY
-   - SPOTIFY_CLIENT_ID
-   - SPOTIFY_CLIENT_SECRET
-   - NEXT_PUBLIC_SPOTIFY_REDIRECT_URI (update to your production URL)
-4. Update the Spotify Redirect URI in your Spotify Developer Dashboard to match your production URL
-
-## Troubleshooting
-
-### Database Issues
-
-- **"new row violates row-level security policy for table 'songs'"**: This means RLS is enabled but proper permissions aren't set. To fix:
-  1. Go to Supabase > Authentication > Policies
-  2. Find the `songs` table
-  3. Click "Disable RLS" or use SQL: `ALTER TABLE songs DISABLE ROW LEVEL SECURITY;`
-
-### Spotify Authentication Issues
-
-- **Authentication fails**: Ensure your Spotify Client ID, Client Secret, and Redirect URI match exactly what's in your Spotify Developer Dashboard.
-- **"Invalid redirect URI"**: Verify that the redirect URI in your Spotify app settings matches the one in your environment variables.
-
-### Song Search Not Working
-
-- Verify your Spotify API credentials are correct
-- Check that your app hasn't exceeded Spotify API rate limits
-
 ## License
 
 MIT
-
-## System Overview
-
-MusicLine is a collaborative music timeline application that leverages the Spotify API for song data and playback. The system architecture follows a modern full-stack approach with Next.js serving both the frontend React application and backend API routes.
-
-The application flow begins with users authenticating via Spotify OAuth to gain access to playlist features. Users can search for songs using the Spotify API, with results displayed in real-time. Selected songs are added to a shared timeline stored in a Supabase PostgreSQL database.
-
-The timeline interface displays songs chronologically with user avatars, album artwork, and playback controls. Users can filter the timeline by date ranges or view user-specific timelines. A weekly song reveal system adds engagement by making newly added songs visible only after a countdown timer expires. The throwback feature randomly surfaces older songs to encourage rediscovery.
-
-Data flows from the Spotify API through server-side API routes to protect authentication credentials, while the frontend handles state management and UI interactions. The application prioritizes a responsive, modern interface with animations and sleek design elements, making it accessible across devices.
