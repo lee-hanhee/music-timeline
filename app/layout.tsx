@@ -10,7 +10,7 @@ import { ThemeProvider } from "@/app/components/ui/theme-provider";
 const font = GeistSans;
 
 export const metadata: Metadata = {
-  title: "Music Timeline",
+  title: "Music-line",
   description: "A Spotify-powered music timeline app",
 };
 

@@ -1,29 +1,24 @@
-/**
- * Song Reveal API Endpoints
- *
- * This file provides two API routes:
- * 1. POST - Reveals all hidden songs (sets their revealed status to true)
- * 2. GET - Gets information about the next scheduled reveal time
- *
- * These endpoints are part of the "Sunday Song Reveal" feature where
- * songs are hidden until Sunday at 12 PM, then automatically revealed.
+/* This file provides two API routes:
+ 1. POST - Reveals all hidden songs (sets their revealed status to true)
+ 2. GET - Gets information about the next scheduled reveal time
+
+ These endpoints are part of the "Sunday Song Reveal" feature where songs are hidden until Sunday at 12 PM, then automatically revealed.
  */
 
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabase";
 
-/**
- * POST Endpoint: Reveal Hidden Songs
- *
- * This endpoint can be triggered in two ways:
- * 1. Automatically by a scheduled task/cron job at 12 PM every Sunday
- * 2. Manually for testing/administrative purposes
- *
- * The endpoint finds all songs where revealed=false and updates them to revealed=true.
- *
- * @param request - The incoming HTTP request (may contain authentication)
- * @returns JSON response with results or error message
- */
+/* POST Endpoint: Reveal Hidden Songs
+ 
+This endpoint can be triggered in two ways:
+  -1. Automatically by a scheduled task/cron job at 12 PM every Sunday
+  -2. Manually for testing/administrative purposes
+
+The endpoint finds all songs where revealed=false and updates them to revealed=true.
+
+@param request - The incoming HTTP request (may contain authentication)
+@returns JSON response with results or error message
+*/
 export async function POST(request: NextRequest) {
   try {
     // Check for an authorization key for security
@@ -32,22 +27,12 @@ export async function POST(request: NextRequest) {
     const expectedKey = process.env.REVEAL_SONGS_API_KEY;
 
     // If an API key is configured, verify the request has the correct key
-    if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
+    if (expectedKey && authHeader !== `Bearer ${expectedKey}`) { // check if expectedKey is set and if the auth header is not the expected key
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Get the current date for logging/debugging
     const currentDate = new Date();
-
-    // OPTIONAL FEATURE: Only reveal songs on Sundays
-    // This is commented out to allow manual triggering for testing
-    // Uncomment to enforce Sunday-only reveals
-    // if (currentDate.getDay() !== 0) {  // 0 = Sunday in JavaScript
-    //   return NextResponse.json({
-    //     message: "Reveal is only allowed on Sundays",
-    //     today: currentDate.toISOString()
-    //   });
-    // }
 
     // Step 1: Find all songs that haven't been revealed yet
     const { data: unrevealed, error: fetchError } = await supabase
@@ -93,8 +78,8 @@ export async function POST(request: NextRequest) {
       revealedCount: unrevealed.length, // Number of songs that were revealed
       timestamp: currentDate.toISOString(), // When the reveal happened
     });
-  } catch (error: any) {
-    // Catch any unexpected errors
+  } 
+  catch (error: any) { // catch any unexpected errors
     console.error("Exception in reveal songs endpoint:", error);
     return NextResponse.json(
       {
@@ -106,15 +91,14 @@ export async function POST(request: NextRequest) {
   }
 }
 
-/**
- * GET Endpoint: Get Next Reveal Time
- *
- * This endpoint calculates when the next song reveal will happen
- * (next Sunday at 12 PM) and how many songs are waiting to be revealed.
- *
- * This is used by the countdown timer on the frontend.
- *
- * @returns JSON with the next reveal time and pending song count
+/* GET Endpoint: Get Next Reveal Time
+ 
+ This endpoint calculates when the next song reveal will happen
+ (next Sunday at 12 PM) and how many songs are waiting to be revealed.
+ 
+ This is used by the countdown timer on the frontend.
+ 
+ @returns JSON with the next reveal time and pending song count
  */
 export async function GET() {
   try {
@@ -161,8 +145,8 @@ export async function GET() {
       nextReveal: nextSunday.toISOString(), // When the next reveal will happen
       pendingRevealCount: count || 0, // How many songs will be revealed
     });
-  } catch (error: any) {
-    // Handle any unexpected errors
+  } 
+  catch (error: any) { // catch any unexpected errors
     return NextResponse.json(
       { error: "Failed to get next reveal time" },
       { status: 500 }

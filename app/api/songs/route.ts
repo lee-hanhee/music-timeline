@@ -1,11 +1,11 @@
-/**
- * API Routes for Songs
- *
- * This file handles HTTP requests for fetching and creating songs.
- * It provides two main endpoints:
- * - GET: Retrieves songs from the database with optional date filters
- * - POST: Creates a new song in the database after validating the data
- */
+/* API Routes for Songs
+ 
+  This file handles HTTP requests for fetching and creating songs.
+
+  It provides two main endpoints:
+  - GET: Retrieves songs from the database with optional date filters
+  - POST: Creates a new song in the database after validating the data
+*/
 
 import { NextRequest, NextResponse } from "next/server";
 import { addSong, getSongs } from "@/app/lib/supabase";
