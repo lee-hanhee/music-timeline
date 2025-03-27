@@ -97,10 +97,6 @@ MusicLine is a full-stack web application that allows users to create and share 
   - `getSpotifyClientToken()`: Obtains a client credentials token
   - `searchSpotify()`: Searches for tracks using the Spotify API
   - `getSpotifyTrack()`: Gets details for a specific track
-  - `getSpotifyUserProfile()`: Gets the authenticated user's profile
-  - `getUserPlaylists()`: Gets user's Spotify playlists
-  - `addTrackToPlaylist()`: Adds a track to a Spotify playlist
-  - `createPlaylist()`: Creates a new Spotify playlist
 
 ### Frontend
 
@@ -108,7 +104,6 @@ MusicLine is a full-stack web application that allows users to create and share 
   - `Timeline.tsx`: Displays songs in chronological order with filtering options
   - `SongForm.tsx`: Handles song search and addition
   - `SpotifyAuth.tsx`: Manages Spotify authentication state
-  - `SpotifyPlayer.tsx`: Embedded Spotify player for song previews
   - `SongRevealCountdown.tsx`: Weekly song reveal countdown timer
   - `ThrowbackCard.tsx`: Displays throwback songs
 
