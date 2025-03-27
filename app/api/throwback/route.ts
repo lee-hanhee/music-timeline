@@ -1,3 +1,5 @@
+// This file is used to get the throwback song from the database.
+
 import { NextResponse } from "next/server";
 import { getThrowbackSong } from "@/app/lib/supabase";
 
@@ -13,8 +15,8 @@ export async function GET() {
     }
 
     return NextResponse.json(throwbackSong);
-  } catch (error) {
-    // Error in GET /api/throwback
+  } 
+  catch (error) { // error in GET /api/throwback
     return NextResponse.json(
       { error: "Failed to fetch throwback song" },
       { status: 500 }
