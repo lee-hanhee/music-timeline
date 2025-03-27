@@ -185,9 +185,9 @@ export default function Timeline() {
 
   const getUserProfilePicture = (name: string) => {
     const profilePictures = {
-      Kate: "/assets/profiles/kate.jpg",
-      Victor: "/assets/profiles/victor.jpg",
-      Hanhee: "/assets/profiles/hanhee.jpg",
+      Kate: "/kate.jpg",
+      Victor: "/victor.jpg",
+      Hanhee: "/hanhee.jpg",
     };
     return profilePictures[name as keyof typeof profilePictures];
   };
