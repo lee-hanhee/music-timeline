@@ -1,11 +1,9 @@
-/**
- * Supabase Database Connection and Helper Functions
- *
- * This file manages the connection to our Supabase database and provides
- * helper functions for common operations like fetching, adding, and updating songs.
- *
- * Supabase is a service that provides a database (PostgreSQL) with a REST API.
- */
+/*
+ This file manages the connection to our Supabase database and provides
+ helper functions for common operations like fetching, adding, and updating songs.
+ 
+ Supabase is a service that provides a database (PostgreSQL) with a REST API.
+*/
 
 import { createClient } from "@supabase/supabase-js";
 

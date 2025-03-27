@@ -57,26 +57,3 @@ export async function searchSpotify(query: string): Promise<SpotifySong[]> {
     return [];
   }
 }
-
-// Get a specific track by ID
-export async function getSpotifyTrack(id: string): Promise<SpotifySong | null> {
-  try {
-    const token = await getSpotifyClientToken();
-
-    const response = await fetch(`https://api.spotify.com/v1/tracks/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`Spotify API error: ${response.statusText}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    // Error getting Spotify track
-    return null;
-  }
-}
