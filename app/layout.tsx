@@ -21,39 +21,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <head>
-        {/* Prevents theme flickering in Safari by applying theme before page renders */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              (function() {
-                try {
-                  // Only run on Safari
-                  if (/^((?!chrome|android).)*safari/i.test(navigator.userAgent)) {
-                    const storedTheme = localStorage.getItem('theme');
-                    
-                    if (storedTheme === 'dark') {
-                      document.documentElement.classList.add('dark');
-                    } else if (storedTheme === 'light') {
-                      document.documentElement.classList.remove('dark');
-                    } else {
-                      // For 'system' preference, check media query
-                      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                      if (prefersDark) {
-                        document.documentElement.classList.add('dark');
-                      } else {
-                        document.documentElement.classList.remove('dark');
-                      }
-                    }
-                  }
-                } catch (e) {
-                  // Fail silently
-                }
-              })();
-            `,
-          }}
-        />
-      </head>
       <body className={font.className}>
         <ThemeProvider
           attribute="class"
