@@ -7,18 +7,16 @@
 
 import { createClient } from "@supabase/supabase-js";
 
-// Get database connection information from environment variables
+// Get database connection information from env vars
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// Check for required environment variables
+// Check for req env vars 
 if (!supabaseUrl || !supabaseAnonKey) {
-  // If these variables are missing, the app won't be able to connect to the database
-  // This would normally throw an error, but is left empty for simplicity
+  throw new Error("Missing Supabase environment variables");
 }
 
-// Create a client connection to Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey); // create client connection to supabase
 
 /**
  * Get Songs from Database
@@ -31,6 +29,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
  * @param includeUnrevealed - Whether to include songs that haven't been revealed yet (default: false)
  * @returns Array of songs formatted for the frontend
  */
+
 export async function getSongs(
   startDate?: string,
   endDate?: string,
@@ -157,42 +156,6 @@ export async function addSong(song: {
     // Re-throw the error to be handled by the API route
     throw error;
   }
-}
-
-/**
- * Get Songs by User
- *
- * Fetches all songs added by a specific user.
- *
- * @param user - The name of the user to filter by (e.g., "Kate", "Victor", "Hanhee")
- * @returns Array of songs added by the specified user
- */
-export async function getSongsByUser(user: string) {
-  const { data, error } = await supabase
-    .from("songs")
-    .select("*")
-    .eq("added_by", user) // Filter for songs where added_by matches the user parameter
-    .order("added_at", { ascending: false }); // Sort by newest first
-
-  if (error) {
-    // If there was an error, return an empty array
-    return [];
-  }
-
-  // Convert database format to frontend format
-  return (data || []).map((song) => ({
-    id: song.id,
-    name: song.name,
-    artist: song.artist,
-    album: song.album,
-    coverUrl: song.cover_url,
-    previewUrl: song.preview_url,
-    addedBy: song.added_by,
-    addedAt: song.added_at,
-    platform: song.platform,
-    spotifyId: song.spotify_id,
-    spotifyUrl: song.spotify_url,
-  }));
 }
 
 /**
