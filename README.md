@@ -32,6 +32,7 @@ Data flows from the Spotify API through server-side API routes to protect authen
 - **Backend**:
   - Next.js API Routes
   - Supabase (PostgreSQL database)
+  - Supabase Edge Functions (for automated tasks)
 - **Authentication**:
   - Spotify OAuth
 - **APIs**:
@@ -69,6 +70,9 @@ Data flows from the Spotify API through server-side API routes to protect authen
 ├── public/                       # Static files
 ├── db/                           # Database scripts and schemas
 ├── supabase/                     # Supabase configuration
+│   ├── functions/                # Supabase Edge Functions
+│   │   └── reveal-sunday-songs/  # Weekly song reveal automation
+│   └── schema.sql                # Database schema
 └── fix-database.sql              # Database setup script
 ```
 
@@ -108,6 +112,46 @@ Data flows from the Spotify API through server-side API routes to protect authen
   - `SpotifyAuth.tsx`: Manages Spotify authentication state
   - `SongRevealCountdown.tsx`: Weekly song reveal countdown timer
   - `ThrowbackCard.tsx`: Displays throwback songs
+
+## Automated Tasks
+
+- **Weekly Song Reveal**: Supabase Edge Function that automatically sets `revealed = true` for all pending songs every Sunday at 12 PM EST (5 PM UTC)
+  - Located in `supabase/functions/reveal-sunday-songs/`
+  - Uses Deno CRON functionality to schedule weekly execution
+  - No manual intervention required once deployed
+
+## Environment Setup
+
+To set up the environment variables for local development:
+
+1. Create a `.env.local` file in the project root with the following:
+
+   ```
+   # Supabase connection details
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+
+   # Supabase service role key (only for server-side operations)
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+
+   # Spotify API credentials
+   SPOTIFY_CLIENT_ID=your-spotify-client-id
+   SPOTIFY_CLIENT_SECRET=your-spotify-client-secret
+   SPOTIFY_REDIRECT_URI=http://localhost:3000/api/auth/spotify/callback
+   ```
+
+2. For Edge Functions development, create another `.env.local` file in `supabase/functions/reveal-sunday-songs/`:
+
+   ```
+   SUPABASE_URL=https://your-project-id.supabase.co
+   SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+   ```
+
+3. Replace the placeholder values with your actual credentials from:
+   - Supabase Project Dashboard → Settings → API
+   - Spotify Developer Dashboard → Your App → Settings
+
+Note: Never commit these files to your repository. They're already added to `.gitignore`.
 
 ## License
 

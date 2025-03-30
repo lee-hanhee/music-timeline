@@ -1,0 +1,3 @@
+[functions]
+  [functions.reveal-sunday-songs]
+    verify_jwt = false 
